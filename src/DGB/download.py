@@ -6,12 +6,12 @@ import sys
 import zipfile
 from enum import Enum
 from pathlib import Path
-
 import numpy as np
 import pandas as pd
 import requests
 from clint.textui import progress
 
+data_root = "TG_network_datasets"
 
 class Data:
     def __init__(self, sources, destinations, timestamps, edge_idxs, labels):
@@ -41,7 +41,29 @@ def download_missing():
     print("missing file download complete")
 
 
-class bcolors:
+def download_all():
+        print(
+            BColors.WARNING + "attempting download all data, will remove ALL files and download ALL possible files" + BColors.ENDC)
+        print("To download missing files only, use 'download_missing'")
+        inp = input('Confirm redownload? (y/N)\n').lower()
+        if 'y' == inp:
+            try:
+                shutil.rmtree(f"./{data_root}")
+            except:
+                pass
+            try:
+                _ = os.system('zenodo_get ' + str(zend_id_all))
+            except KeyboardInterrupt:
+                pass
+            except Exception as e:
+                raise
+
+            unzip_delete()
+        else:
+            print("download cancelled")
+
+
+class BColors:
     HEADER = '\033[95m'
     OKBLUE = '\033[94m'
     OKCYAN = '\033[96m'
@@ -101,8 +123,6 @@ sub_dict = {
     "wikipedia": ["ml_wikipedia.csv", "ml_wikipedia.npy", "ml_wikipedia_node.npy", "wikipedia.csv"]
 }
 
-data_set_list = list[DataSetName]
-
 
 def unzip_delete():
     os.remove("./md5sums.txt") if os.path.exists("./md5sums.txt") else None
@@ -111,7 +131,7 @@ def unzip_delete():
         filename.unlink()
 
     if not os.path.exists("./TG_network_datasets.zip"):
-        print(f"{bcolors.FAIL}DOWNLOAD FAILED{bcolors.ENDC}, TG_network_datasets not found")
+        print(f"{BColors.FAIL}DOWNLOAD FAILED{BColors.ENDC}, TG_network_datasets not found")
         return
 
     with zipfile.ZipFile("TG_network_datasets.zip", 'r') as zip_ref:
@@ -141,13 +161,11 @@ def dataset_names_list():
 
 class TemporalDataSets(object):
     def __init__(self, data_name: str = None, data_set_statistics: bool = True, skip_download_prompt: bool = False):
-        """
-        data_list (data_set_list): [ list of dataset enums ]
-        """
+
         self.data_str = data_name
         self.base_directory = f"TG_network_datasets/{self.data_str}"
         self.data_root = "TG_network_datasets"
-        self.exception_msg_process = bcolors.FAIL + "please run process() method before retrieving training data" + bcolors.ENDC
+        self.exception_msg_process = BColors.FAIL + "please run process() method before retrieving training data" + BColors.ENDC
         self.data_set_statistics = data_set_statistics
         self.url = f"https://zenodo.org/record/{zen_id}"
         self.mask = None
@@ -167,7 +185,7 @@ class TemporalDataSets(object):
             if inp == "y":
                 exit()
             else:
-                sys.stdout.write(bcolors.WARNING + "program will continue but program is unsafe \n" + bcolors.ENDC)
+                sys.stdout.write(BColors.WARNING + "program will continue but program is unsafe \n" + BColors.ENDC)
 
         else:
             self.data_list = [check_dict.get(data_name)]  # original name
@@ -199,7 +217,7 @@ class TemporalDataSets(object):
         if not self.skip_download_prompt:
             inp = input('Will you download the dataset(s) now? (y/N)\n').lower()
         if inp == 'y':
-            print(f"{bcolors.WARNING}Download started, this might take a while . . . {bcolors.ENDC}")
+            print(f"{BColors.WARNING}Download started, this might take a while . . . {BColors.ENDC}")
             print(f"Dataset title: {self.data_list[0].value}")
             r = requests.get(self.url, stream=True)
             with open(self.path_download, 'wb') as f:
@@ -220,11 +238,11 @@ class TemporalDataSets(object):
                 zip_ref.extractall(f"./{self.data_root}")
 
             self.delete_single()
-            print(f"{bcolors.OKGREEN}Download completed {bcolors.ENDC}")
+            print(f"{BColors.OKGREEN}Download completed {BColors.ENDC}")
 
         else:
             raise Exception(
-                bcolors.FAIL + "Data not found error, download " + self.data_str + " to continue" + bcolors.ENDC)
+                BColors.FAIL + "Data not found error, download " + self.data_str + " to continue" + BColors.ENDC)
 
     def check_downloaded(self):
         if not osp.isdir(f"./{self.data_root}"):
@@ -242,7 +260,7 @@ class TemporalDataSets(object):
                 list_data_not_found.append(data_set_name.value)
         if not list_data_not_found:
             if self.data_set_statistics:
-                print(f"All data found for {bcolors.OKGREEN}{self.data_str}{bcolors.ENDC}")
+                print(f"All data found for {BColors.OKGREEN}{self.data_str}{BColors.ENDC}")
         else:
             sys.stdout.write("The following datasets not found: ")
             for data_set_name in list_data_not_found:
@@ -250,26 +268,6 @@ class TemporalDataSets(object):
             sys.stdout.write("\n")
             self.download_file()
 
-    def download_all(self):
-        print(
-            bcolors.WARNING + "attempting download all data, will remove ALL files and download ALL possible files" + bcolors.ENDC)
-        print("To download missing files only, use 'download_missing'")
-        inp = input('Confirm redownload? (y/N)\n').lower()
-        if 'y' == inp:
-            try:
-                shutil.rmtree(f"./{self.data_root}")
-            except:
-                pass
-            try:
-                _ = os.system('zenodo_get ' + str(zend_id_all))
-            except KeyboardInterrupt:
-                pass
-            except Exception as e:
-                raise
-
-            unzip_delete()
-        else:
-            print("download cancelled")
 
     @property
     def train_data(self):

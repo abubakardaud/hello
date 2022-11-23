@@ -12,6 +12,9 @@ np.seterr(divide='ignore', invalid='ignore')
 from sklearn.metrics import *
 
 
+
+
+
 class Evaluator(object):
 	"""An Evaluator for Dynamic Link Prediction Task"""
 	def __init__(self, dataset_name):
