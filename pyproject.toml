@@ -10,9 +10,11 @@ authors = [
     { name="Shenyang Huang", email="shenyang.huang@mail.mcgill.ca" },
 { name="Abu bakar Daud" , email="abubakar.daud@mail.mcgill.ca" },
 ]
-description = "Install package for 'Towards better dynamic link prediction' paper at NeurIPS 2022, the code provides download, processing, dataloading and evaluation code for a suite of dynamic graph datasets."
+
+
+description = "Package for 'Towards better dynamic link prediction' paper at NeurIPS 2022, the code provides download, processing, dataloading and evaluation code for a suite of dynamic graph datasets."
 readme = "README.md"
-requires-python = ">=3.8.1"
+requires-python = ">=3.6"
 classifiers = [
     "Programming Language :: Python :: 3",
     "License :: OSI Approved :: MIT License",

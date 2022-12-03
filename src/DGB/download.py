@@ -11,86 +11,13 @@ import pandas as pd
 import requests
 from clint.textui import progress
 
+# folder name where all files are downloaded
 data_root = "TG_network_datasets"
-
-class Data:
-    def __init__(self, sources, destinations, timestamps, edge_idxs, labels):
-        self.sources = sources
-        self.destinations = destinations
-        self.timestamps = timestamps
-        self.edge_idxs = edge_idxs
-        self.labels = labels
-        self.n_interactions = len(sources)
-        self.unique_nodes = set(sources) | set(destinations)
-        self.n_unique_nodes = len(self.unique_nodes)
-
-
+# zenodo.org id's for the datasets
 zen_id = 7213796
 zend_id_all = 7008205
 
-
-# https://zenodo.org/record/7008205#.YxtIwi0r1hC
-# base_directory = "TG_network_datasets"
-# zen_id = 7008204 for the most updated version.
-
-def download_missing():
-    print("verifying then downloading missing files")
-    input_list = dataset_names_list()
-    for n in input_list:
-        _ = TemporalDataSets(data_name=n, skip_download_prompt=True)
-    print("missing file download complete")
-
-
-def download_all():
-        print(
-            BColors.WARNING + "attempting download all data, will remove ALL files and download ALL possible files" + BColors.ENDC)
-        print("To download missing files only, use 'download_missing'")
-        inp = input('Confirm redownload? (y/N)\n').lower()
-        if 'y' == inp:
-            try:
-                shutil.rmtree(f"./{data_root}")
-            except:
-                pass
-            try:
-                _ = os.system('zenodo_get ' + str(zend_id_all))
-            except KeyboardInterrupt:
-                pass
-            except Exception as e:
-                raise
-
-            unzip_delete()
-        else:
-            print("download cancelled")
-
-
-class BColors:
-    HEADER = '\033[95m'
-    OKBLUE = '\033[94m'
-    OKCYAN = '\033[96m'
-    OKGREEN = '\033[92m'
-    WARNING = '\033[93m'
-    FAIL = '\033[91m'
-    ENDC = '\033[0m'
-    BOLD = '\033[1m'
-    UNDERLINE = '\033[4m'
-
-
-class DataSetName(Enum):
-    CanParl = "CanParl"
-    Contacts = "Contacts"
-    Enron = "enron"
-    Flights = "Flights"
-    Lastfm = "lastfm"
-    Mooc = "mooc"
-    Reddit = "reddit"
-    SocialEvo = "SocialEvo"
-    UCI = "uci"
-    UNtrade = "UNtrade"
-    UNvote = "UNvote"
-    USLegis = "USLegis"
-    Wikipedia = "wikipedia"
-
-
+# mapping of dataset names to enums.
 check_dict = {
     "canparl": DataSetName.CanParl,
     "contacts": DataSetName.Contacts,
@@ -106,7 +33,7 @@ check_dict = {
     "us_Legis": DataSetName.USLegis,
     "wikipedia": DataSetName.Wikipedia,
 }
-
+# dictionary for all data_sets and files associated with them
 sub_dict = {
     "CanParl": ["CanParl.csv", "ml_CanParl.csv", "ml_CanParl.npy", "ml_CanParl_node.npy"],
     "Contacts": ["Contacts.csv", "ml_Contacts.csv", "ml_Contacts.npy", "ml_Contacts_node.npy"],
@@ -124,7 +51,92 @@ sub_dict = {
 }
 
 
+class BColors:
+    """
+    A class to change the colors of the strings.
+    """
+    HEADER = '\033[95m'
+    OKBLUE = '\033[94m'
+    OKCYAN = '\033[96m'
+    OKGREEN = '\033[92m'
+    WARNING = '\033[93m'
+    FAIL = '\033[91m'
+    ENDC = '\033[0m'
+    BOLD = '\033[1m'
+    UNDERLINE = '\033[4m'
+
+
+class DataSetName(Enum):
+    """
+    Enums for all the datasets
+    """
+    CanParl = "CanParl"
+    Contacts = "Contacts"
+    Enron = "enron"
+    Flights = "Flights"
+    Lastfm = "lastfm"
+    Mooc = "mooc"
+    Reddit = "reddit"
+    SocialEvo = "SocialEvo"
+    UCI = "uci"
+    UNtrade = "UNtrade"
+    UNvote = "UNvote"
+    USLegis = "USLegis"
+    Wikipedia = "wikipedia"
+
+
+class Data:
+    """
+    Data class for processing
+    """
+
+    def __init__(self, sources, destinations, timestamps, edge_idxs, labels):
+        self.sources = sources
+        self.destinations = destinations
+        self.timestamps = timestamps
+        self.edge_idxs = edge_idxs
+        self.labels = labels
+        self.n_interactions = len(sources)
+        self.unique_nodes = set(sources) | set(destinations)
+        self.n_unique_nodes = len(self.unique_nodes)
+
+
+def download_all():
+    """
+    downloads all data_sets that have not been downloaded yet
+    """
+
+    print("verifying then downloading missing files")
+    input_list = dataset_names_list()
+    for n in input_list:
+        _ = TemporalDataSets(data_name=n, skip_download_prompt=True)
+    print("missing file download complete")
+
+
+def force_download_all():
+    """
+    removes all data set files and redownloads all data_sets that have not been downloaded yet
+    """
+
+    print(
+        BColors.WARNING + "attempting download all data, will remove ALL files and download ALL possible files" + BColors.ENDC)
+    print("To download missing files only, use 'download_all'")
+    inp = input('Confirm redownload? (y/N)\n').lower()
+    if 'y' == inp:
+        try:
+            shutil.rmtree(f"./{data_root}")
+        except:
+            pass
+
+        download_all()
+    else:
+        print("download cancelled")
+
+
 def unzip_delete():
+    """
+    unzips zenodo files and deletes unnecessary files
+    """
     os.remove("./md5sums.txt") if os.path.exists("./md5sums.txt") else None
 
     for filename in Path("../..").glob("*.tmp"):
@@ -150,17 +162,38 @@ def unzip_delete():
 
 
 def print_dataset_names():
+    """
+    print name of all datasets
+    """
     print("The following is the list of possible dataset names")
     for name in check_dict.keys():
         print(name)
 
 
 def dataset_names_list():
+    """
+    returns list of all datasets
+    """
     return check_dict.keys()
 
 
 class TemporalDataSets(object):
+    """
+    A class used to create data set objects
+    """
+
     def __init__(self, data_name: str = None, data_set_statistics: bool = True, skip_download_prompt: bool = False):
+        """
+        Parameters
+        ----------
+        data_name : str
+            The name of the data set, to see all possible use::
+            >>> print(DGB.list_all())
+        data_set_statistics : bool,optional
+            False to suppress all data set statistics prints
+        skip_download_prompt : bool,optional
+            skip download prompt if data not found and move straight to downloading
+        """
 
         self.data_str = data_name
         self.base_directory = f"TG_network_datasets/{self.data_str}"
@@ -199,6 +232,9 @@ class TemporalDataSets(object):
         self.check_downloaded()
 
     def delete_single(self):
+        """
+        removes unnecessary files after download
+        """
         try:
             os.remove(f"{self.data_list[0].value}.zip")
         except OSError:
@@ -212,7 +248,11 @@ class TemporalDataSets(object):
             pass
 
     def download_file(self):
-        print("Data missing, download recommended!")
+        """
+        downloads a complete dataset
+        """
+        if not self.skip_download_prompt:
+            print("Data missing, download recommended!")
         inp = "y"
         if not self.skip_download_prompt:
             inp = input('Will you download the dataset(s) now? (y/N)\n').lower()
@@ -245,6 +285,9 @@ class TemporalDataSets(object):
                 BColors.FAIL + "Data not found error, download " + self.data_str + " to continue" + BColors.ENDC)
 
     def check_downloaded(self):
+        """
+        check if file is properly downloaded
+        """
         if not osp.isdir(f"./{self.data_root}"):
             print(f"dict: {self.data_root} not found")
             self.download_file()
@@ -268,7 +311,6 @@ class TemporalDataSets(object):
             sys.stdout.write("\n")
             self.download_file()
 
-
     @property
     def train_data(self):
         if not self.train:
@@ -288,6 +330,9 @@ class TemporalDataSets(object):
         return self.val
 
     def process(self):
+        """
+        processes the data, and returns train, val, test sets.
+        """
         # split_masks = {
         #     'train': train_mask,
         #     'val': val_mask,
@@ -476,7 +521,7 @@ class TemporalDataSets(object):
 
         data_splits = {
             'node_feats': node_features,
-            'eddge_feats': edge_features,
+            'edge_feats': edge_features,
             'full_data': full_data,
             'train_data': train_data,
             'val_data': val_data,
@@ -493,9 +538,3 @@ if __name__ == "__main__":
     for x in input_list:
         example_data = TemporalDataSets(data_name=x, skip_download_prompt=True)
         data_dict = example_data.process()
-
-# TODO
-# make sure it works for indervidual files download
-# finish the processing function
-# finish the evaluation function - edgecase-testing errors for the function.
-# finish a pip install setup
