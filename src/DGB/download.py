@@ -291,7 +291,7 @@ class TemporalDataSets(object):
         check if file is properly downloaded
         """
         if not osp.isdir(f"./{self.data_root}"):
-            print(f"dict: {self.data_root} not found")
+            print(f"{BColors.FAIL}folder {self.data_root} not found/ Data not found{BColors.ENDC}")
             self.download_file()
             return
         list_data_not_found = []
