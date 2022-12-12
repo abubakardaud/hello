@@ -13,7 +13,7 @@ example code snippets
 use pip for Python, make sure version python version is 3.6+
 
 ```
->>> pip install DGB
+>>> pip install dgb
 ```
 
 
@@ -22,11 +22,11 @@ use pip for Python, make sure version python version is 3.6+
 ----------------------------
 Code snippet to import the module::
 ```
-import DGB
+import dgb
 ```
 Code snippets to download a dataset::
 ```   
-enron = DGB.TemporalDataSets(data_name="enron")
+enron = dgb.TemporalDataSets(data_name="enron")
 enron_dict = enron.process()
 train = enron_dict["train"]
 test  = enron_dict["test"]
@@ -35,24 +35,24 @@ val   = enron_dict["validation"]
 
 to print all possible datasets::
 ```
-data_list = DGB.list_all()
+data_list = dgb.list_all()
 for data_name in data_list:
 print(data_name)
 ```
 
 to download all possible datasets that have not been downloaded yet::
 ```
-DGB.download_all()
+dgb.download_all()
 ```
 
 to force redownload all datasets::
 ```
-DGB.force_download_all()
+dgb.force_download_all()
 ```
 
 to skip download prompts and dataset statistics when processing::
 ```
-DGB.TemporalDataSets(data_name="enron", skip_download_prompt=True, data_set_statistics=False)
+dgb.TemporalDataSets(data_name="enron", skip_download_prompt=True, data_set_statistics=False)
 ```
 
 ## License

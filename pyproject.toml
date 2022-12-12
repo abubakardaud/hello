@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "dgb"
-version = "15.1"
+version = "0.2"
 authors = [
   { name="Farimah Poursafaei", email="Farimah.poursafaei@mila.quebec" },
     { name="Shenyang Huang", email="shenyang.huang@mail.mcgill.ca" },
