@@ -115,7 +115,6 @@ def download_all():
         _ = TemporalDataSets(data_name=n, skip_download_prompt=True)
     print("missing file download complete")
 
-
 def force_download_all():
     """
     removes all data set files and redownloads all data_sets that have not been downloaded yet
@@ -134,6 +133,10 @@ def force_download_all():
         download_all()
     else:
         print("download cancelled")
+
+
+
+
 
 
 def unzip_delete():
@@ -191,7 +194,7 @@ class TemporalDataSets(object):
         ----------
         data_name : str
             The name of the data set, to see all possible use::
-            >>> print(DGB.list_all())
+            >>> print(dgb.list_all())
         data_set_statistics : bool,optional
             False to suppress all data set statistics prints
         skip_download_prompt : bool,optional
@@ -225,10 +228,6 @@ class TemporalDataSets(object):
 
         else:
             self.data_list = [check_dict.get(data_name)]  # original name
-            # sys.stdout.write("Dataset title: ")
-            # for dataset in self.data_list:
-            #    sys.stdout.write(f"{str(dataset)}")
-            # sys.stdout.write("\n")
             self.url += f"/files/{self.data_list[0].value}.zip?download=1"
             self.path_download = f"./{self.data_list[0].value}.zip"
 
@@ -296,6 +295,7 @@ class TemporalDataSets(object):
             self.download_file()
             return
         list_data_not_found = []
+
         for data_set_name in self.data_list:
             data_found = True
             for file_name in sub_dict[str(data_set_name.value)]:
@@ -535,9 +535,3 @@ class TemporalDataSets(object):
         return data_splits
 
 
-if __name__ == "__main__":
-    random.seed(2020)
-    input_list = dataset_names_list()
-    for x in input_list:
-        example_data = TemporalDataSets(data_name=x, skip_download_prompt=True)
-        data_dict = example_data.process()

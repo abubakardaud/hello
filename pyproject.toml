@@ -3,8 +3,8 @@ requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [project]
-name = "DGB"
-version = "13.0.2"
+name = "dgb"
+version = "0.1"
 authors = [
   { name="Farimah Poursafaei", email="Farimah.poursafaei@mila.quebec" },
     { name="Shenyang Huang", email="shenyang.huang@mail.mcgill.ca" },
