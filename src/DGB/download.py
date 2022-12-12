@@ -17,6 +17,26 @@ data_root = "TG_network_datasets"
 zen_id = 7213796
 zend_id_all = 7008205
 
+
+class DataSetName(Enum):
+    """
+    Enums for all the datasets
+    """
+    CanParl = "CanParl"
+    Contacts = "Contacts"
+    Enron = "enron"
+    Flights = "Flights"
+    Lastfm = "lastfm"
+    Mooc = "mooc"
+    Reddit = "reddit"
+    SocialEvo = "SocialEvo"
+    UCI = "uci"
+    UNtrade = "UNtrade"
+    UNvote = "UNvote"
+    USLegis = "USLegis"
+    Wikipedia = "wikipedia"
+
+
 # mapping of dataset names to enums.
 check_dict = {
     "canparl": DataSetName.CanParl,
@@ -66,23 +86,6 @@ class BColors:
     UNDERLINE = '\033[4m'
 
 
-class DataSetName(Enum):
-    """
-    Enums for all the datasets
-    """
-    CanParl = "CanParl"
-    Contacts = "Contacts"
-    Enron = "enron"
-    Flights = "Flights"
-    Lastfm = "lastfm"
-    Mooc = "mooc"
-    Reddit = "reddit"
-    SocialEvo = "SocialEvo"
-    UCI = "uci"
-    UNtrade = "UNtrade"
-    UNvote = "UNvote"
-    USLegis = "USLegis"
-    Wikipedia = "wikipedia"
 
 
 class Data:
